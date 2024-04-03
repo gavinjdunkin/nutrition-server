@@ -1,0 +1,25 @@
+{
+  "type": "module",
+  "name": "nutrition-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gavinjdunkin/nutrition-server.git"
+  },
+  "author": "Gavin Dunkin",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gavinjdunkin/nutrition-server/issues"
+  },
+  "homepage": "https://github.com/gavinjdunkin/nutrition-server#readme",
+  "dependencies": {
+    "axios": "^1.6.8",
+    "express": "^4.19.2",
+    "mongodb": "^6.5.0"
+  }
+}
