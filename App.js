@@ -6,6 +6,8 @@ const app = express();
 
 // Enable CORS middleware
 app.use(cors());
+app.use(express.json());
+
 
 // Mount the Nutritionix route handler
 Nutritionix(app);
