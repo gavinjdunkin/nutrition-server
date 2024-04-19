@@ -1,8 +1,8 @@
 import axios from 'axios';
-import RecipeInteraction from './models/RecipeInteraction.js';
+import RecipeInteraction from './model.js';
 
-const Nutritionix = (app) => {
-  app.get('/nutritionix', async (req, res) => {
+export default function RecipeRoutes(app) {
+  app.get('/recipe', async (req, res) => {
     const query = req.query.q;
     const options = {
       method: 'GET',
@@ -46,19 +46,27 @@ const Nutritionix = (app) => {
   });
   app.post('/recipe/:uri/like', async (req, res) => {
     const recipeId = req.params.uri;
+    const currentUser = req.session["currentUser"];
+    if (!currentUser) {
+      res.sendStatus(401);
+      return;
+    }
     try {
       let interaction = await RecipeInteraction.findOne({ recipeId });
       if (!interaction) {
         interaction = new RecipeInteraction({
           recipeId,
-          likes: 1,
+          likes: { count: 1, users: [currentUser._id] },
           comments: []
         });
+        interaction.likes.users.push(currentUser._id);
         await interaction.save();
       } else {
-        interaction.likes += 1;
+        interaction.likes.count += 1;
+        interaction.likes.users.push(currentUser._id);
         await interaction.save();
       }
+
       res.json({ message: 'Liked!' });
     } catch (error) {
       console.error(error);
@@ -68,17 +76,24 @@ const Nutritionix = (app) => {
   app.post('/recipe/:uri/comment', async (req, res) => {
     const recipeId = req.params.uri;
     const comment = req.body.comment;
+    console.log(req.session);
+    const currentUser = req.session["currentUser"];
+    if (!currentUser) {
+      res.sendStatus(401);
+      return;
+    }
+
     try {
       let interaction = await RecipeInteraction.findOne({ recipeId });
       if (!interaction) {
         interaction = new RecipeInteraction({
           recipeId,
           likes: 0,
-          comments: [{ text: comment, user: 'Anonymous' }]
+          comments: [{ text: comment, user: currentUser._id }]
         });
         await interaction.save();
       } else {
-        interaction.comments.push({ text: comment, user: 'Anonymous' });
+        interaction.comments.push({ text: comment, user: currentUser._id });
         await interaction.save();
       }
       res.json({ message: 'Comment added!' });
@@ -89,4 +104,3 @@ const Nutritionix = (app) => {
   });
 };
 
-export default Nutritionix;
