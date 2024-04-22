@@ -16,9 +16,11 @@ export default function UserRoutes(app) {
     app.get("/api/users", findAllUsers);
   const findUserById = async (req, res) => {
     const { id } = req.params;
+
     const user = await dao.findUserById(id);
+    console.log(user);
     res.json(user); };
-    app.get("/api/users/:userId", findUserById);
+    app.get("/api/users/:id", findUserById);
   const updateUser = async (req, res) => {
     const { userId } = req.params;
     const status = await dao.updateUser(userId, req.body);
@@ -66,4 +68,52 @@ const signout = (req, res) => {
     app.post("/api/users/signup", signup);
     app.post("/api/users/signout", signout);
     app.post("/api/users/profile", profile);
+    const findAllLikedRecipesByUser = async (req, res) => {
+      console.log('findAllLikedRecipesForUser');
+      const userId = req.params.userId;
+      try {
+        // Fetch all liked recipes for the user
+        const likedRecipes = await dao.findAllLikedRecipesByUser(userId);
+        res.json(likedRecipes);
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+      }
+    };
+    
+    app.get("/api/liked-recipes/:userId", findAllLikedRecipesByUser);
+
+    const findAllLikedRecipesForUser = async (req, res) => {
+      const user = req.session["currentUser"]
+      if (!user) {
+        res.sendStatus(401);
+        return;
+      }
+      try {
+        // Fetch all liked recipes for the user
+        const likedRecipes = await dao.findAllLikedRecipesByUser(user._id);
+        res.json(likedRecipes);
+        console.log(likedRecipes);
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+      }
+    };
+    app.get("/api/liked-recipes", findAllLikedRecipesForUser);
+    const followUser = async (req, res) => {
+      const currentUser = req.session["currentUser"];
+      if (!currentUser) {
+        res.sendStatus(401);
+        return;
+      }
+      const { userId } = req.params;
+      try {
+        await dao.followUser(currentUser._id, userId);
+        res.json({ message: 'Followed!' });
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+      }
+    }
+    app.post("/api/users/follow/:userId", followUser);
 };

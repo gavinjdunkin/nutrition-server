@@ -4,6 +4,8 @@ const userSchema = new mongoose.Schema({
     password: { type: String, required: true },
     firstName: String,
     lastName: String,
+    email: String,
+    likedRecipes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Recipe" }],
     role: {
       type: String,
       enum: ["ADMIN", "USER"],
