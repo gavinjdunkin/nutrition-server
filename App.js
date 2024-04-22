@@ -7,7 +7,6 @@ import session from "express-session";
 import "dotenv/config";
 const CONNECTION_STRING = process.env.DB_CONNECTION_STRING;
 mongoose.connect(CONNECTION_STRING);
-
 const app = express();
 app.use(
     cors({
@@ -30,8 +29,8 @@ app.use(
      };
    }
    app.use(session(sessionOptions));
+   
 app.use(express.json());
-app.use(cors());
 
 
 // Mount the Nutritionix route handler
