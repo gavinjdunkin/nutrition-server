@@ -31,6 +31,7 @@ app.use(
    }
    app.use(session(sessionOptions));
 app.use(express.json());
+app.use(cors());
 
 
 // Mount the Nutritionix route handler
